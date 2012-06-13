@@ -11,7 +11,7 @@
         "server-side"
     ],
     "description": "Server-side underscore template builder.",
-    "version": "0.2.1-13",
+    "version": "0.2.1-14",
     "licenses": [
         {
             "type": "MIT",
@@ -37,5 +37,8 @@
     "repository": {
         "type": "git",
         "url": "git://github.com/pthrasher/overscore.git"
+    },
+    "bin": {
+        "overscore": "./bin/overscore"
     }
 }

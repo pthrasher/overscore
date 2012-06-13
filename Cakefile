@@ -56,7 +56,7 @@ _bump = (level='build') ->
         oldSemver = pkg.version
         newSemver =  semver.inc(pkg.version, level)
         pkg.version = newSemver
-        fs.writeFile 'package.json', JSON.stringify(pkg, null, '\t'), 'utf8', (err) ->
+        fs.writeFile 'package.json', JSON.stringify(pkg, null, '    '), 'utf8', (err) ->
             if err?
                 log.error 'json', "Couldn't write package.json: #{util.format err}"
             log.info 'semver', "#{oldSemver} -> #{newSemver}"

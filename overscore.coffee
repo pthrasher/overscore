@@ -1,3 +1,4 @@
+# TODO: Refactor, and cleanup. Runs, but messy to read.
 _       = require 'underscore'
 fs      = require 'fs'
 log     = require 'npmlog'
@@ -79,15 +80,25 @@ nonos = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_',
 exports.main = (args) ->
     program
         .version(version)
+        .usage('[options] <files ...>')
         .option('-s, --silent', 'Shortcut for --loglevel silent.')
+        .option('-a, --amd', 'Wrap output with define to make it AMD compatible.')
         .option('-n, --namespace <namespace>', 'Namespace under which templates should live. [Templates]', String, 'Templates')
         .option('-l, --loglevel <level>', 'Minimum log level to display. [info]', String, 'info')
         .option('-b, --basedir <basedir>', 'Base directory to keep out of namespacing.')
         .parse(args)
 
+
     log.level = program.loglevel
     if program.silent
         log.level = 'silent'
+
+    log.verbose 'options', program.args.length
+    if not program.args.length
+        log.verbose 'options', 'You didn\'t specify any files.'
+        console.log program.helpInformation()
+        program.emit '--help'
+        process.exit(1)
 
     log.verbose 'args', args
     log.verbose 'args', program.args
@@ -110,16 +121,28 @@ exports.main = (args) ->
         return template
 
     if templates.length
-        console.log "/*\n * Safely grab the namespace(s).\n */"
+        indent = ''
+        if program.amd
+            if program.namespace.indexOf('.') > -1
+                console.log "define('#{program.namespace.split('.').join('/')}', function() {"
+            else
+                console.log "define('#{program.namespace}', function() {"
+            indent = '    '
+        console.log "#{indent}/*\n#{indent} * Safely grab the namespace(s).\n#{indent} */"
         if program.namespace.indexOf('.') > -1
             nsParts = program.namespace.split '.'
             for item, i in nsParts
                 if i is 0
-                    console.log "var #{item} = #{item} != null ? #{item} : {};"
+                    topNS = item
+                    console.log "#{indent}var #{item} = #{item} != null ? #{item} : {};"
                 else
                     id = nsParts[..i].join('.')
-                    console.log "#{id} = #{id} != null ? #{id} : {};"
+                    console.log "#{indent}#{id} = #{id} != null ? #{id} : {};"
         else
-            console.log "var #{program.namespace} = #{program.namespace} != null ? #{program.namespace} : {};"
-        console.log "\n/*\n * Individual templates.\n */"
-        console.log templates.join '\n'
+            topNS = program.namespace
+            console.log "#{indent}var #{program.namespace} = #{program.namespace} != null ? #{program.namespace} : {};"
+        console.log "\n#{indent}/*\n#{indent} * Individual templates.\n#{indent} */"
+        console.log "#{indent}#{templates.join "\n#{indent}"}"
+        if program.amd
+            console.log "#{indent}return #{topNS};"
+            console.log "});"

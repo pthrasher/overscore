@@ -1,0 +1,9 @@
+0.2.1
+  - Supports AMD define wrapping.
+0.2.0
+  - Supports command line opts
+  - Finds files based on passed in globs.
+  - Compiles files, outputs js to stdout.
+  - Logs to stderr.
+0.1.0
+  - Recursively finds all .html files in current directory, and compiles them.

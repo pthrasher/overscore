@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+var path = require('path'),
+    overscore = require(path.join(__dirname, '../index'));
+overscore.main(process.argv);

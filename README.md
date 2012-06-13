@@ -22,6 +22,7 @@ output.
 Usage
 -----
 
+    $ npm install -g overscore
     $ overscore -n Templates -b example example/**/*.html > templates.js
 
 ### templates.js
